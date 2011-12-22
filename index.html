@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <style>
+      div#world {
+        width: 700px;
+        height: 700px;
+        border: 1px solid #CCC;
+      }
+      div.cell {
+        width: 7px;
+        height: 7px;
+        float: left;
+      }
+      div.cell.dead {
+        background-color: black;
+      }
+      div.cell.live {
+        background-color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div id='game-of-life'></div>
+    <a href='#tick' id='ticker'>Tick</a> | <a href='#autoplay' id='autoplay'>Autoplay</a>
+    <script type='text/javascript' src='src/game-of-life.js'></script>
+    <script type='text/javascript' src='src/game-of-life-renderer.js'></script>
+    <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>
+    <script type='text/javascript'>
+      world = new World(100, 100);
+      worldRenderer = new WorldRenderer(world);
+      var autoplay = false;
+
+      $('#ticker').click(function(event){
+        event.preventDefault();
+        autoplay = false;
+        world.tick();
+        worldRenderer.render();
+      });
+      function autoplayClojure() {
+        if(autoplay) {
+          world.tick();
+          worldRenderer.render();
+          setTimeout('autoplayClojure();', 50);
+        }
+      }
+      $('#autoplay').click(function(event){
+        event.preventDefault();
+        autoplay = !autoplay;
+        autoplayClojure();
+      });
+      $('#game-of-life').on('click', '.cell', function(){
+        autoplay = false;
+        var x = parseInt($(this).attr('data-x'));
+        var y = parseInt($(this).attr('data-y'));
+
+        var cell = world.getCell(x, y);
+        cell.toggle();
+
+        worldRenderer.toggle(cell);
+      });
+    </script>
+  </body>
+</html>
